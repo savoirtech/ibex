@@ -26,6 +26,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <modules>
         <module>ibex-router</module>
+        <module>java-api-testing</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -434,7 +435,16 @@
         </plugins>
     </build>
     <dependencyManagement>
+
         <dependencies>
+
+            <!-- IBEX -->
+
+            <dependency>
+                <groupId>com.savoirtech</groupId>
+                <artifactId>ibex-router</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-core</artifactId>

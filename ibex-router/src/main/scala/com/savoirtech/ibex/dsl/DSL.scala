@@ -18,12 +18,7 @@ package com.savoirtech.ibex.dsl
 
 ;
 
-import org.apache.camel.model.{Block, DataFormatDefinition}
-import reflect.Manifest
-import java.util.Comparator;
-import org.apache.camel.processor.aggregate.AggregationStrategy
-
-import org.apache.camel.spi.Policy
+import com.savoirtech.ibex.api.IbexProcessor
 import org.apache.camel.Exchange
 
 /**
@@ -32,8 +27,20 @@ import org.apache.camel.Exchange
  *
  */
 trait DSL {
-  /**
-  def aggregate(expression: Exchange => Any, strategy: AggregationStrategy): SAggregateDefinition
+
+  def to(uri: String): DSL
+
+  def from(uri: String): DSL
+
+  def process(processor: IbexProcessor): DSL
+
+  def process(function: Exchange => Unit): DSL
+
+  def -->(uri: String): DSL
+
+
+
+  /** def aggregate(expression: Exchange => Any, strategy: AggregationStrategy): SAggregateDefinition
 
   def as[Target](toType: Class[Target]): DSL
 
@@ -143,7 +150,7 @@ trait DSL {
 
   def wireTap(uri: String, expression: Exchange => Any): DSL
 
-  def -->(uris: String*): DSL
-   */
+  def -->(uris: String*): DSL */
+  override def toString = super.toString
 }
 
