@@ -87,10 +87,10 @@ object SillyMain extends App {
 
     //Traditional Camel like blocking request reply.
     val result = myRouter ? Process(exchange)
-    result.onComplete {
-      case Right(output) ⇒ println("Received " + output)
-      case Left(failure) ⇒ println("Failure " + failure)
-    }
+    //result.onComplete {
+      //case Right(output) ⇒ println("Received " + output)
+      //case Left(failure) ⇒ println("Failure " + failure)
+    //}
 
     //Thread.sleep(500)
     //println("This is the actual result " + result.isCompleted)

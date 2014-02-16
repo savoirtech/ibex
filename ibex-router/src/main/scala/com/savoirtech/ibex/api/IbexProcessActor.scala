@@ -30,7 +30,7 @@ class IbexProcessActor(processor: Processor, nextHop: String) extends Actor {
       processor.process(exchange);
       println(this.getClass + " nextHop " + nextHop)
       if (nextHop.isEmpty) {
-        sender tell (exchange)
+        sender tell (exchange,self)
         println(this.getClass + " Received message and modified it. -> '%s' in actor %s".format(exchange, self.path))
       } else {
         println(this.getClass + " Found a message I need to re-route, to " + nextHop + " then I need to tell the parent.")

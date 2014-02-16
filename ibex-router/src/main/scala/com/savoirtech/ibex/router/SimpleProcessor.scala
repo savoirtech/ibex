@@ -30,7 +30,7 @@ abstract class SimpleProcessor extends Actor with Processor {
       println(this.getClass + " The sender " + sender)
       println(this.getClass + " Received message and modified it. -> '%s' in actor %s".format(exchange, self.path.name))
       process(exchange)
-      sender tell exchange
+      sender tell (exchange,self)
   }
 
   //Work on the exchange.

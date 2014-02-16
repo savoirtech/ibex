@@ -32,11 +32,11 @@ abstract class IbexProcessor extends Actor with Processor {
 
       process(exchange);
       if (nextActor == null) {
-        sender tell (exchange)
+        sender tell (exchange,self)
       } else {
         println("IbexProcessor -- Found a message I need to re-route, to " + nextActor + " then I need to tell the parent.")
         val nextHop = this.context.actorFor(nextActor)
-        nextHop.tell(exchange)
+        nextHop.tell(exchange,self)
       }
 
       println("IbexProcessor -- Received message and modified it. -> '%s' in actor %s".format(exchange, self.path))
