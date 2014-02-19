@@ -18,8 +18,9 @@
 package com.savoirtech.ibex.router
 
 import org.apache.camel.{Processor, Exchange}
+import com.savoirtech.ibex.api.IbexProcessorWithActor
 
-class DemoProcessor extends Processor {
+class DemoProcessorWithActor extends IbexProcessorWithActor {
 
   def process(ex: Exchange) {
     ex.getIn.setBody("This is a new boday!!!")

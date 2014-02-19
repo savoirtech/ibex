@@ -43,7 +43,7 @@ object SillyMain extends App {
     val resizer = DefaultResizer(lowerBound = 5, upperBound = 100)
     val router3 = system.actorOf(Props[Splitter].withRouter(RoundRobinRouter(resizer = Some(resizer))), "eip!splitter")
 
-    val myRouter = system.actorOf(Props(new IbexProcessActor(new DemoProcessor(), "akka://ibexeip/user/eip!splitter")))
+    val myRouter = system.actorOf(Props(new IbexProcessActor(new DemoProcessorWithActor(), "akka://ibexeip/user/eip!splitter")))
     val camelContext = new DefaultCamelContext()
     /*  println("Path " + myRouter.path)
     val start = System.currentTimeMillis()

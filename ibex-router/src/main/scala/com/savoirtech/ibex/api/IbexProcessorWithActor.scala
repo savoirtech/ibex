@@ -17,28 +17,30 @@
 
 package com.savoirtech.ibex.api
 
+import org.apache.camel.{Processor, Exchange}
 import akka.actor.Actor
-import org.apache.camel.Processor
 import com.savoirtech.ibex.Process
 
-class IbexProcessActor(processor: IbexProcessorWithActor, nextHop: String) extends Actor {
-  def this(processor: IbexProcessorWithActor) = {
-    this(processor, null)
-  }
+abstract class IbexProcessorWithActor extends Actor with Processor {
 
-  def inOut: Boolean = false
+  var nextActor: String = null;
 
   def receive = {
+
     case Process(exchange) =>
-      processor.process(exchange);
-      println(this.getClass + " nextHop " + nextHop)
-      if (nextHop.isEmpty) {
-        sender tell(exchange, self)
-        println(this.getClass + " Received message and modified it. -> '%s' in actor %s".format(exchange, self.path))
+      println("IbexProcessor -- Received message. '%s' in actor %s".format(exchange, self.path))
+
+      process(exchange);
+      if (nextActor == null) {
+        sender tell (exchange,self)
       } else {
-        println(this.getClass + " Found a message I need to re-route, to " + nextHop + " then I need to tell the parent.")
-        val nextActor = this.context.actorFor(nextHop)
-        nextActor.forward(Process(exchange))
+        println("IbexProcessor -- Found a message I need to re-route, to " + nextActor + " then I need to tell the parent.")
+        val nextHop = this.context.actorFor(nextActor)
+        nextHop.tell(exchange,self)
       }
+
+      println("IbexProcessor -- Received message and modified it. -> '%s' in actor %s".format(exchange, self.path))
   }
+
+  def process(exchange: Exchange)
 }

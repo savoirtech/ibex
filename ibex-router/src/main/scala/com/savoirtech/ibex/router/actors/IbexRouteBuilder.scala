@@ -1,33 +1,32 @@
 package com.savoirtech.ibex.router.actors
 
-import com.savoirtech.ibex.dsl.DSL
-import com.savoirtech.ibex.api.IbexProcessor
+import com.savoirtech.ibex.dsl.{TypeHolder, AbstractProcessingDefinitions, DSL}
+import com.savoirtech.ibex.api.{IbexProcessActor, IbexProcessorWithActor}
 import org.apache.camel.Exchange
 import scala.collection.immutable.Stack
 import java.lang.String
 
-abstract class IbexRouteBuilder extends DSL {
+abstract class IbexRouteBuilder extends DSL  {
 
   //Set a route id
   //Attach to a particular AKKA chain
   //Register and monitor
-
   def configure()
 
-  val stack = new Stack[DSL]
-
-  def from(uri: String) = stack.top.from(uri)
-
-  def to(uri: String) = stack.top.to(uri)
-
-  def process(function: Exchange => Unit) = stack.top.process(function)
 
 
-  //This would instantiate an IbexProcessor, hide that in an
-  //actor and then tell it what the next hop would be as we traverse the
-  //chain.
+  /**
+  sealed trait Method {
+    def on[R](routeDef: RouteDef[R]): R = routeDef.withMethod(this)
+  }
+    */
 
-  def process(processor: IbexProcessor) = stack.top.process(processor)
+  override def stepsInRoute {
+    configure()
+    super.stepsInRoute
+  }
 
-  def -->(uri: String) = stack.top.to(uri)
+
+
+
 }

@@ -9,9 +9,15 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <packaging>bundle</packaging>
+
     <artifactId>java-api-testing</artifactId>
 
+    <name>IBEX :: Scala router :: Java Testing</name>
+
     <dependencies>
+
+
         <dependency>
             <groupId>com.savoirtech</groupId>
             <artifactId>ibex-router</artifactId>
@@ -22,10 +28,7 @@
             <artifactId>camel-core</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-test</artifactId>
-        </dependency>
+
     </dependencies>
 
 </project>

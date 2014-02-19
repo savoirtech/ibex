@@ -19,7 +19,7 @@ package com.savoirtech.ibex.dsl
 ;
 
 import com.savoirtech.ibex.api.IbexProcessor
-import org.apache.camel.Exchange
+import scala.collection.mutable.ArrayBuffer
 
 /**
  * Defines the 'keywords' in our Scala DSL
@@ -28,17 +28,30 @@ import org.apache.camel.Exchange
  */
 trait DSL {
 
-  def to(uri: String): DSL
+  var operations = ArrayBuffer.empty[Any]
 
-  def from(uri: String): DSL
+  def add(step: Any) = {
+    operations += (step)
+    this
+  }: DSL
 
-  def process(processor: IbexProcessor): DSL
+  def toc(uri: String) = add("to Camel:" + uri)
 
-  def process(function: Exchange => Unit): DSL
+  def fromc(uri: String) = add("from Camel :" + uri)
 
-  def -->(uri: String): DSL
+  def to(uri: String) = add("to Ibex:" + uri)
 
+  def from(uri: String) = add("from Ibex :" + uri)
 
+  def process(processor: IbexProcessor) = add(processor.asInstanceOf[IbexProcessor])
+
+  def realType[W](holder: TypeHolder[W]) = holder.realType
+
+  def stepsInRoute {
+    for (elem <- operations) {
+      println(elem.getClass + ":" + elem)
+    }
+  }
 
   /** def aggregate(expression: Exchange => Any, strategy: AggregationStrategy): SAggregateDefinition
 
