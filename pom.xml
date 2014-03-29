@@ -40,6 +40,7 @@
         <dist.name>savoirtech-${project.version}</dist.name>
         <!-- dependency versions -->
         <aetos-version>1.5.5</aetos-version>
+        <akka-version>2.3.1</akka-version>
         <activemq-version>5.9.0</activemq-version>
         <apachePOIVersion>3.9</apachePOIVersion>
 
@@ -507,15 +508,20 @@
             <dependency>
                 <groupId>com.typesafe.akka</groupId>
                 <artifactId>akka-osgi_2.10</artifactId>
-                <version>2.2.3</version>
+                <version>${akka-version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.typesafe.akka</groupId>
                 <artifactId>akka-camel_2.10</artifactId>
-                <version>2.2.3</version>
+                <version>${akka-version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-testkit_2.10</artifactId>
+                <version>${akka-version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
