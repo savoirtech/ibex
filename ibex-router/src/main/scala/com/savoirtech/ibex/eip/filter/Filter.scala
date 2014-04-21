@@ -17,14 +17,13 @@
 
 package com.savoirtech.ibex.eip.filter
 
-import com.savoirtech.ibex.actor.IbexActor
-import com.savoirtech.ibex.api.Message
-import akka.actor.ActorRef
+import com.savoirtech.ibex.actor.Step
+import com.savoirtech.ibex.api.{Traversal, Message}
 
-class Filter(predicate: (Message) => Boolean, recipient: ActorRef) extends IbexActor {
-  override def onMessage(msg: Message): Unit = {
-    if (predicate(msg)) {
-      recipient ! msg
+class Filter(predicate: (Message) => Boolean) extends Step {
+  override def onTraversal(traversal: Traversal): Unit = {
+    if (predicate(traversal.message)) {
+      traversal.proceed()
     }
   }
 }

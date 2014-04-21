@@ -17,17 +17,17 @@
 
 package com.savoirtech.ibex.eip.splitter
 
-import com.savoirtech.ibex.api.Message
-import com.savoirtech.ibex.actor.IbexActor
-import akka.actor.ActorRef
+import com.savoirtech.ibex.api.{Traversal, Message}
+import com.savoirtech.ibex.actor.Step
 
-class Splitter(f: (Message) => List[Message], recipient: ActorRef) extends IbexActor {
-  override def onMessage(msg: Message): Unit = {
-    val splits: List[Message] = f(msg)
+class Splitter(f: (Message) => List[Message]) extends Step {
+
+  override def onTraversal(traversal: Traversal): Unit = {
+    val splits: List[Message] = f(traversal.message)
     (0 until splits.length).foreach {
       i =>
         val message = splits(i)
-        recipient ! message.withHeader("BATCH_SIZE", splits.size).withHeader("BATCH_INDEX", i)
+        traversal.proceed(message.withHeader("BATCH_SIZE", splits.size).withHeader("BATCH_INDEX", i))
     }
   }
 }

@@ -17,20 +17,27 @@
 
 package com.savoirtech.ibex.eip.wiretap
 
-import com.savoirtech.ibex.test.AkkaTestCase
-import org.junit.Test
+import com.savoirtech.ibex.test.StepTestCase
 import akka.actor.Props
 import com.savoirtech.ibex.api.Message
+import scala.concurrent.duration._
 
-class WiretapTest extends AkkaTestCase {
+class WiretapTest extends StepTestCase {
 
-  @Test
-  def testWiretap() {
-    val actor = system.actorOf(Props(classOf[Wiretap], testActor, testActor))
-    val input: Message = Message("Hello!")
-    actor ! input
-    expectMsg(input)
-    expectMsg(input)
+  "Wiretap" should "route message to the wiretap path" in {
+
+    within(200 milliseconds) {
+      val wiretapPath = newPath()
+      val wiretap = system.actorOf(Props(classOf[Wiretap], wiretapPath))
+
+      val message: Message = Message("Hello")
+      wiretap ! newTraversal(message)
+
+      expectMsg(Proceed(message))
+      expectMsg(Send(wiretapPath, message))
+    }
 
   }
+
+
 }

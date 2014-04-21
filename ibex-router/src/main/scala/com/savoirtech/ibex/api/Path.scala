@@ -15,28 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.savoirtech.ibex.eip.cbr
+package com.savoirtech.ibex.api
 
-import org.junit.Test
-import akka.actor.ActorRef
+import scala.concurrent.Future
 
-class ChoicesBuilderTest {
-  @Test
-  def testEmptyChoices() {
-    val builder:ChoicesBuilder = ChoicesBuilder()
-    assert(builder.choices.isEmpty)
-  }
+trait Path {
+  def send(message: Message): Unit
 
-  @Test
-  def testWithSingleChoice() {
-    val builder:ChoicesBuilder = ChoicesBuilder().when(msg => true).recipient(ActorRef.noSender)
-    assert(builder.choices.size == 1)
-  }
-
-  @Test
-  def testWithOtherwise() {
-    val builder:ChoicesBuilder = ChoicesBuilder().when(msg => true).recipient(ActorRef.noSender).otherwise(ActorRef.noSender)
-    assert(builder.choices.size == 2)
-  }
-
+  def request(message: Message): Future[Message]
 }

@@ -17,15 +17,6 @@
 
 package com.savoirtech.ibex.eip.cbr
 
-import com.savoirtech.ibex.api.Message
-import akka.actor.ActorRef
+import com.savoirtech.ibex.api.{Path, Message}
 
-case class Choice(predicate: (Message) => Boolean, recipient: ActorRef) {
-
-}
-
-object Choice {
-  def otherwise(recipient:ActorRef):Choice = {
-    Choice(msg => true, recipient)
-  }
-}
+case class Choice(predicate: (Message) => Boolean, path: Path)

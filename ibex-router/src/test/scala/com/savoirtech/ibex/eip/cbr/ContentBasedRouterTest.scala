@@ -17,25 +17,59 @@
 
 package com.savoirtech.ibex.eip.cbr
 
-import com.savoirtech.ibex.test.AkkaTestCase
-import org.junit.Test
-import akka.actor.{ActorRef, Props}
+import com.savoirtech.ibex.test.StepTestCase
+import akka.actor.{UnhandledMessage, Props}
 import com.savoirtech.ibex.api.Message
+import scala.concurrent.duration._
 
-class ContentBasedRouterTest extends AkkaTestCase {
-  @Test
-  def testWithMatchingMessage() {
-    val actor = system.actorOf(Props(classOf[ContentBasedRouter], List(Choice(msg => true, testActor))), "choice")
-    val msg = Message(body="Hello, World!")
-    actor ! msg
-    expectMsg(msg)
+class ContentBasedRouterTest extends StepTestCase {
+
+  "A ContentBasedRouter" should "send message to first-matched choice" in {
+    within(200 milliseconds) {
+
+      val path1 = newPath()
+      val path2 = newPath()
+
+      val choices = List(
+        Choice(msg => false, path1),
+        Choice(msg => true, path2)
+      )
+      val cbr = system.actorOf(Props(classOf[ContentBasedRouter], choices))
+      val message = Message("foo")
+      cbr ! newTraversal(message)
+      expectMsg(PathInjection(path2, message))
+    }
   }
 
-  @Test
-  def testWithMismatchAndOtherwise() {
-    val actor = system.actorOf(Props(classOf[ContentBasedRouter], List(Choice(msg => false, ActorRef.noSender), Choice.otherwise(testActor))), "choice")
-    val msg = Message(body="Hello, World!")
-    actor ! msg
-    expectMsg(msg)
+  it should "call unhandled when no matching choice found" in {
+    within(200 milliseconds) {
+      system.eventStream.subscribe(testActor, classOf[UnhandledMessage])
+      val path1 = newPath()
+      val choices = List(
+        Choice(msg => false, path1)
+      )
+      val cbr = system.actorOf(Props(classOf[ContentBasedRouter], choices))
+      val message = Message("foo")
+      val traversal = newTraversal(message)
+      cbr ! traversal
+
+      expectMsg(UnhandledMessage(traversal, testActor, cbr))
+    }
   }
+
+//  @Test
+//  def testWithMatchingMessage() {
+//    val actor = system.actorOf(Props(classOf[ContentBasedRouter], List(Choice(msg => true, testActor))), "choice")
+//    val msg = Message(body="Hello, World!")
+//    actor ! msg
+//    expectMsg(msg)
+//  }
+//
+//  @Test
+//  def testWithMismatchAndOtherwise() {
+//    val actor = system.actorOf(Props(classOf[ContentBasedRouter], List(Choice(msg => false, ActorRef.noSender), Choice.otherwise(testActor))), "choice")
+//    val msg = Message(body="Hello, World!")
+//    actor ! msg
+//    expectMsg(msg)
+//  }
 }

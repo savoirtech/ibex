@@ -15,18 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.savoirtech.ibex.test
+package com.savoirtech.ibex.actor
 
-import akka.actor.ActorSystem
-import akka.testkit.{ImplicitSender, TestKit}
-import org.junit.After
+import akka.actor.{ReceiveTimeout, Actor, ActorLogging}
+import com.savoirtech.ibex.api.{Traversal, Message}
 
-abstract class AkkaTestCase extends TestKit(ActorSystem("IbexTesting")) with ImplicitSender {
+abstract class Step extends Actor with ActorLogging {
 
-  @After
-  def shutdownActorSystem(): Unit = {
-    TestKit.shutdownActorSystem(system)
+  def onTraversal(traversal: Traversal): Unit
+
+  def onTimeout(timeout: ReceiveTimeout): Unit = {}
+
+  override def receive: Receive = {
+    case traversal: Traversal => onTraversal(traversal)
+    case timeout: ReceiveTimeout => onTimeout(timeout)
   }
-
 }
-

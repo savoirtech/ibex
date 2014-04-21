@@ -17,24 +17,30 @@
 
 package com.savoirtech.ibex.eip.filter
 
-import com.savoirtech.ibex.test.AkkaTestCase
-import org.junit.Test
-import akka.actor.Props
+import com.savoirtech.ibex.test.StepTestCase
 import com.savoirtech.ibex.api.Message
+import akka.actor.Props
 import scala.concurrent.duration._
 
-class FilterTest extends AkkaTestCase {
-  @Test
-  def testWithAcceptedMessage() {
-    val actor = system.actorOf(Props(classOf[Filter], (msg:Message) => true, testActor), "filter")
-    actor ! Message("Hello!")
-    expectMsg(Message("Hello!"))
+class FilterTest extends StepTestCase {
+
+  "A Filter" should "proceed current traversal when predicate matches message" in {
+    within(200 milliseconds) {
+      val filter = system.actorOf(Props(classOf[Filter], (message: Message) => true))
+      val message = Message("Hello")
+      filter ! newTraversal(message)
+
+      expectMsg(Proceed(message))
+      expectNoMsg()
+    }
   }
 
-  @Test
-  def testWithFilteredMessage() {
-    val actor = system.actorOf(Props(classOf[Filter], (msg:Message) => false, testActor), "filter")
-    actor ! Message("Hello!")
-    expectNoMsg(500 milliseconds)
+  it should "drop the message when the predicate does not match the message" in {
+    within(200 milliseconds) {
+      val filter = system.actorOf(Props(classOf[Filter], (message: Message) => false))
+      val message = Message("Hello")
+      filter ! newTraversal(message)
+      expectNoMsg()
+    }
   }
 }

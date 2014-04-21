@@ -17,25 +17,28 @@
 
 package com.savoirtech.ibex.eip.aggregator
 
-import com.savoirtech.ibex.actor.IbexActor
-import com.savoirtech.ibex.api.Message
-import akka.actor.{ActorRef, ReceiveTimeout}
+import com.savoirtech.ibex.actor.Step
+import com.savoirtech.ibex.api.{Traversal, Message}
+import akka.actor.ActorRef
 import scala.concurrent.duration.Duration
 
-class Aggregator(aggregation: (Option[Message], Message) => Message, recipient: ActorRef, timeout: Duration) extends IbexActor {
+class Aggregator(aggregation: (Option[Message], Message) => Message, recipient: ActorRef, timeout: Duration) extends Step {
 
-  context.setReceiveTimeout(timeout)
+  //  context.setReceiveTimeout(timeout)
+  //
+  //  var aggregated: Option[Message] = None
+  //
+  //  override def onTimeout(timeout: ReceiveTimeout): Unit = {
+  //    aggregated match {
+  //      case Some(msg) => recipient ! msg
+  //      case _ =>
+  //    }
+  //  }
+  //
+  //  override def onTraversal(traversal: Traversal): Unit = {
+  //    aggregated = Some(aggregation.apply(aggregated, traversal.message))
+  //  }
+  override def onTraversal(traversal: Traversal): Unit = {
 
-  var aggregated: Option[Message] = None
-
-  override def onTimeout(timeout: ReceiveTimeout): Unit = {
-    aggregated match {
-      case Some(msg) => recipient ! msg
-      case _ =>
-    }
-  }
-
-  override def onMessage(msg: Message): Unit = {
-    aggregated = Some(aggregation.apply(aggregated, msg))
   }
 }

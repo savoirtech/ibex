@@ -17,13 +17,12 @@
 
 package com.savoirtech.ibex.eip.wiretap
 
-import com.savoirtech.ibex.actor.IbexActor
-import com.savoirtech.ibex.api.Message
-import akka.actor.ActorRef
+import com.savoirtech.ibex.actor.Step
+import com.savoirtech.ibex.api.{Path, Traversal}
 
-class Wiretap(recipient: ActorRef, wiretapRecipient: ActorRef) extends IbexActor {
-  override def onMessage(msg: Message): Unit = {
-    recipient ! msg
-    wiretapRecipient ! msg
+class Wiretap(wiretapPath: Path) extends Step {
+  override def onTraversal(traversal: Traversal): Unit = {
+    traversal.proceed()
+    wiretapPath.send(traversal.message)
   }
 }

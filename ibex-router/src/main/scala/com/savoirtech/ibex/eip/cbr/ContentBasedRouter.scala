@@ -17,17 +17,17 @@
 
 package com.savoirtech.ibex.eip.cbr
 
-import com.savoirtech.ibex.api.Message
-import com.savoirtech.ibex.actor.IbexActor
+import com.savoirtech.ibex.api.Traversal
+import com.savoirtech.ibex.actor.Step
 
-class ContentBasedRouter(choices: List[Choice]) extends IbexActor {
+class ContentBasedRouter(choices: List[Choice]) extends Step {
 
-  override def onMessage(msg: Message): Unit = {
-    choices.find(choice => choice.predicate(msg)) match {
+  override def onTraversal(traversal: Traversal): Unit = {
+    choices.find(choice => choice.predicate(traversal.message)) match {
       case None =>
-        log.error("Unable to find choice matching message {}.", msg)
-        unhandled(msg)
-      case Some(choice: Choice) => choice.recipient ! msg
+        log.error("Unable to find choice matching message {}.", traversal.message)
+        unhandled(traversal)
+      case Some(choice) => traversal.inject(choice.path)
     }
   }
 }

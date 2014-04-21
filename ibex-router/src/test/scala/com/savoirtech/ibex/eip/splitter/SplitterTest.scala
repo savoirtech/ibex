@@ -17,30 +17,33 @@
 
 package com.savoirtech.ibex.eip.splitter
 
-import com.savoirtech.ibex.test.AkkaTestCase
-import org.junit.Test
-import akka.actor.Props
+import com.savoirtech.ibex.test.StepTestCase
 import com.savoirtech.ibex.api.Message
-import scala.concurrent.duration.Duration
-import java.util.concurrent.TimeUnit
+import akka.actor.Props
+import scala.concurrent.duration._
 
-class SplitterTest extends AkkaTestCase {
+class SplitterTest extends StepTestCase {
 
-  @Test
-  def testWithNoSplits() {
-    val actor = system.actorOf(Props(classOf[Splitter], (msg: Message) => Nil, testActor), "splitter")
-    actor ! Message("Hello")
-    expectNoMsg(Duration(1, TimeUnit.SECONDS))
+
+  "A Splitter" should "do nothing when there are no splits" in {
+    within(200 milliseconds) {
+      val message = Message("Hello")
+      val splitter = system.actorOf(Props(classOf[Splitter], (msg: Message) => Nil))
+      splitter ! newTraversal(message)
+      expectNoMsg()
+    }
   }
 
-  @Test
-  def testWithSplits() {
-    val actor = system.actorOf(Props(classOf[Splitter], (msg: Message) => msg.body.asInstanceOf[String].map(c => msg.copy(c.toString)).toList, testActor), "splitter")
-    actor ! Message("abc")
-    expectMsg(Message("a", Map("BATCH_SIZE" -> 3, "BATCH_INDEX" -> 0)))
-    expectMsg(Message("b", Map("BATCH_SIZE" -> 3, "BATCH_INDEX" -> 1)))
-    expectMsg(Message("c", Map("BATCH_SIZE" -> 3, "BATCH_INDEX" -> 2)))
+  it should "send all proceed Traversal with all splits" in {
+    within(200 milliseconds) {
+      val message = Message("abc")
+      val f = (msg: Message) => msg.body.toString.toList.map((c: Char) => Message(c.toString))
+      val splitter = system.actorOf(Props(classOf[Splitter], f))
+      splitter ! newTraversal(message)
+      expectMsg(Proceed(Message("a").withHeader("BATCH_SIZE", 3).withHeader("BATCH_INDEX", 0)))
+      expectMsg(Proceed(Message("b").withHeader("BATCH_SIZE", 3).withHeader("BATCH_INDEX", 1)))
+      expectMsg(Proceed(Message("c").withHeader("BATCH_SIZE", 3).withHeader("BATCH_INDEX", 2)))
+      expectNoMsg()
+    }
   }
-
-
 }
