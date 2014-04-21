@@ -24,26 +24,27 @@ import scala.concurrent.duration._
 
 class SplitterTest extends StepTestCase {
 
-
-  "A Splitter" should "do nothing when there are no splits" in {
-    within(200 milliseconds) {
-      val message = Message("Hello")
-      val splitter = system.actorOf(Props(classOf[Splitter], (msg: Message) => Nil))
-      splitter ! newTraversal(message)
-      expectNoMsg()
+  "A Splitter" should {
+    "do nothing when there are no splits" in {
+      within(200 milliseconds) {
+        val message = Message("Hello")
+        val splitter = system.actorOf(Props(classOf[Splitter], (msg: Message) => Nil))
+        splitter ! newTraversal(message)
+        expectNoMsg()
+      }
     }
-  }
 
-  it should "send all proceed Traversal with all splits" in {
-    within(200 milliseconds) {
-      val message = Message("abc")
-      val f = (msg: Message) => msg.body.toString.toList.map((c: Char) => Message(c.toString))
-      val splitter = system.actorOf(Props(classOf[Splitter], f))
-      splitter ! newTraversal(message)
-      expectMsg(Proceed(Message("a").withHeader("BATCH_SIZE", 3).withHeader("BATCH_INDEX", 0)))
-      expectMsg(Proceed(Message("b").withHeader("BATCH_SIZE", 3).withHeader("BATCH_INDEX", 1)))
-      expectMsg(Proceed(Message("c").withHeader("BATCH_SIZE", 3).withHeader("BATCH_INDEX", 2)))
-      expectNoMsg()
+    "send all proceed Traversal with all splits" in {
+      within(200 milliseconds) {
+        val message = Message("abc")
+        val f = (msg: Message) => msg.body.toString.toList.map((c: Char) => Message(c.toString))
+        val splitter = system.actorOf(Props(classOf[Splitter], f))
+        splitter ! newTraversal(message)
+        expectMsg(Proceed(Message("a").withHeader("BATCH_SIZE", 3).withHeader("BATCH_INDEX", 0)))
+        expectMsg(Proceed(Message("b").withHeader("BATCH_SIZE", 3).withHeader("BATCH_INDEX", 1)))
+        expectMsg(Proceed(Message("c").withHeader("BATCH_SIZE", 3).withHeader("BATCH_INDEX", 2)))
+        expectNoMsg()
+      }
     }
   }
 }

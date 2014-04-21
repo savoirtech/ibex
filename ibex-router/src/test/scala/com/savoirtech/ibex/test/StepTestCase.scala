@@ -25,7 +25,7 @@ import scala.concurrent.Future
 import akka.dispatch.Futures
 import com.savoirtech.ibex.api.Message
 
-abstract class StepTestCase extends TestKit(ActorSystem("IbexTesting")) with ImplicitSender with FlatSpecLike with Matchers with BeforeAndAfterAll {
+abstract class StepTestCase extends TestKit(ActorSystem("IbexTesting")) with ImplicitSender with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     TestKit.shutdownActorSystem(system)

@@ -15,29 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.savoirtech.ibex.eip.wiretap
+package com.savoirtech.ibex.api
 
-import com.savoirtech.ibex.test.StepTestCase
-import akka.actor.Props
-import com.savoirtech.ibex.api.Message
-import scala.concurrent.duration._
+import org.scalatest.{Matchers, WordSpec}
 
-class WiretapTest extends StepTestCase {
-
-  "A Wiretap" should {
-    "route message to the wiretap path" in {
-      within(200 milliseconds) {
-        val wiretapPath = newPath()
-        val wiretap = system.actorOf(Props(classOf[Wiretap], wiretapPath))
-
-        val message: Message = Message("Hello")
-        wiretap ! newTraversal(message)
-
-        expectMsg(Proceed(message))
-        expectMsg(Send(wiretapPath, message))
-      }
+class MessageTest extends WordSpec with Matchers {
+  "A Message" should {
+    "have no headers when instantiated with just a body" in {
+      val msg = Message("body")
+      msg.body should be("body")
+      msg.headers shouldBe empty
     }
+
+//    "have specified headers when instantiated with them" in {
+//      val msg = Message("body", Map("foo" -> "bar"))
+//      msg.body should be("body")
+//      msg.headers.size should be (1)
+//      msg.headers("foo") should be ("bar")
+//
+//    }
   }
-
-
 }

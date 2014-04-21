@@ -24,23 +24,25 @@ import scala.concurrent.duration._
 
 class FilterTest extends StepTestCase {
 
-  "A Filter" should "proceed current traversal when predicate matches message" in {
-    within(200 milliseconds) {
-      val filter = system.actorOf(Props(classOf[Filter], (message: Message) => true))
-      val message = Message("Hello")
-      filter ! newTraversal(message)
+  "A Filter" should {
+    "proceed current traversal when predicate matches message" in {
+      within(200 milliseconds) {
+        val filter = system.actorOf(Props(classOf[Filter], (message: Message) => true))
+        val message = Message("Hello")
+        filter ! newTraversal(message)
 
-      expectMsg(Proceed(message))
-      expectNoMsg()
+        expectMsg(Proceed(message))
+        expectNoMsg()
+      }
     }
-  }
 
-  it should "drop the message when the predicate does not match the message" in {
-    within(200 milliseconds) {
-      val filter = system.actorOf(Props(classOf[Filter], (message: Message) => false))
-      val message = Message("Hello")
-      filter ! newTraversal(message)
-      expectNoMsg()
+    "drop the message when the predicate does not match the message" in {
+      within(200 milliseconds) {
+        val filter = system.actorOf(Props(classOf[Filter], (message: Message) => false))
+        val message = Message("Hello")
+        filter ! newTraversal(message)
+        expectNoMsg()
+      }
     }
   }
 }
